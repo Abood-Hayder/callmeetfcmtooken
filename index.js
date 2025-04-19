@@ -4,11 +4,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const serviceAccount = require('./serviceAccountKey.json');
-
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(require('./serviceAccountKey.json'))
 });
+
 
 app.use(bodyParser.json());
 
