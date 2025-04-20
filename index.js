@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const serviceAccount = require('./call-f258a-firebase-adminsdk-fbsvc-f89c58f9df.json');
+const serviceAccount = require('./call-f258a-72f7060331c6.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
