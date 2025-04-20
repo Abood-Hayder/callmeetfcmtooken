@@ -3,6 +3,8 @@ const admin = require('firebase-admin');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const { initializeApp } = require('firebase-admin/app');
+const app = initializeApp();
 
 const serviceAccount = require('./call-f258a-72f7060331c6.json');
 
