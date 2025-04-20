@@ -12,28 +12,38 @@ admin.initializeApp({
 
 app.use(bodyParser.json());
 
+
 // نقطة إرسال إشعار
 app.post("/send", function (req, res) {
+  const receivedToken = req.body.fcmToken;
   
   const message = {
-     token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
     notification: {
       title: "Notif",
       body: 'This is a Test Notification'
     },
-     };
-
-
+    token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
+  };
   
-  try {
-    const response = await admin.messaging().send(message);
-    console.log('تم إرسال الإشعار:', response);
-    res.status(200).send({ success: true, messageId: response });
-  } catch (error) {
-    console.error('فشل الإرسال:', error);
-    res.status(500).send({ success: false, error: error.message });
-  }
+  getMessaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).json({
+        message: "Successfully sent message",
+        token: receivedToken,
+      });
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      res.status(400);
+      res.send(error);
+      console.log("Error sending message:", error);
+    });
+  
 });
+
+
+
 
 app.get('/', (req, res) => {
   res.send('FCM Notification Server is running 🎉');
