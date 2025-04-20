@@ -17,10 +17,10 @@ app.post('/send-notification', async (req, res) => {
   const { token, title, body, data } = req.body;
 
   const message = {
-    token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
+    token: token,
     notification: {
-      title: "Notif",
-      body: 'This is a Test Notification',
+      title: title,
+      body: body,
     },
     data: data || {},
   };
