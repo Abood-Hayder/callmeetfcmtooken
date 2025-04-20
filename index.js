@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 
 // نقطة إرسال إشعار
 app.post("/send", function (req, res) {
-  const receivedToken = req.body.fcmToken;
   
   const message = {
      token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
