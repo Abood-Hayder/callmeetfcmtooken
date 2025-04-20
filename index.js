@@ -12,7 +12,6 @@ admin.initializeApp({
 
 app.use(bodyParser.json());
 
-
 // نقطة إرسال إشعار
 app.post('/send-notification', async (req, res) => {
   const { token, title, body, data } = req.body;
@@ -20,15 +19,14 @@ app.post('/send-notification', async (req, res) => {
   const message = {
     token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
     notification: {
-          title: "Notif",
+      title: "Notif",
       body: 'This is a Test Notification',
     },
     data: data || {},
   };
 
-  
   try {
-    const response = admin.messaging().send(message);
+    const response = await admin.messaging().send(message);
     console.log('تم إرسال الإشعار:', response);
     res.status(200).send({ success: true, messageId: response });
   } catch (error) {
@@ -36,9 +34,6 @@ app.post('/send-notification', async (req, res) => {
     res.status(500).send({ success: false, error: error.message });
   }
 });
-
-
-
 
 app.get('/', (req, res) => {
   res.send('FCM Notification Server is running 🎉');
