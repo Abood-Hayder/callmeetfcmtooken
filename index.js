@@ -13,18 +13,19 @@ admin.initializeApp({
 app.use(bodyParser.json());
 
 // نقطة إرسال إشعار
-app.post('/send-notification', async (req, res) => {
-  const { token, title, body, data } = req.body;
-
+app.post("/send", function (req, res) {
+  const receivedToken = req.body.fcmToken;
+  
   const message = {
-    token: token,
+     token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
     notification: {
-      title: title,
-      body: body,
+      title: "Notif",
+      body: 'This is a Test Notification'
     },
-    data: data || {},
-  };
+     };
 
+
+  
   try {
     const response = await admin.messaging().send(message);
     console.log('تم إرسال الإشعار:', response);
