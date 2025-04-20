@@ -1,50 +1,67 @@
-const express = require('express');
-const admin = require('firebase-admin');
-const bodyParser = require('body-parser');
+
+
+import {initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getMessaging } from "firebase-admin/messaging";
+import express, { json } from "express";
+import cors from "cors";
+
+process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.json());
 
-const admin = require('firebase-admin');
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  }),
+app.use(
+  cors({
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+  })
+);
+
+app.use(function(req, res, next) {
+  res.setHeader("Content-Type", "application/json");
+  next();
 });
 
 
+initializeApp({
+  credential: applicationDefault(),
+  projectId: 'potion-for-creators',
+});
 
-app.use(bodyParser.json());
-
-// نقطة إرسال إشعار
-app.post('/send-notification', async (req, res) => {
-  const { token, title, body, data } = req.body;
-
+app.post("/send", function (req, res) {
+  const receivedToken = req.body.fcmToken;
+  
   const message = {
-    token: token,
     notification: {
-      title: title,
-      body: body,
+      title: "Notif",
+      body: 'This is a Test Notification'
     },
-    data: data || {},
+    token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
   };
-
-  try {
-    const response = await admin.messaging().send(message);
-    console.log('تم إرسال الإشعار:', response);
-    res.status(200).send({ success: true, messageId: response });
-  } catch (error) {
-    console.error('فشل الإرسال:', error);
-    res.status(500).send({ success: false, error: error.message });
-  }
+  
+  getMessaging()
+    .send(message)
+    .then((response) => {
+      res.status(200).json({
+        message: "Successfully sent message",
+        token: receivedToken,
+      });
+      console.log("Successfully sent message:", response);
+    })
+    .catch((error) => {
+      res.status(400);
+      res.send(error);
+      console.log("Error sending message:", error);
+    });
+  
+  
 });
 
-app.get('/', (req, res) => {
-  res.send('FCM Notification Server is running 🎉');
-});
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+app.listen(3000, function () {
+  console.log("Server started on port 3000");
 });
