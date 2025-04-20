@@ -1,67 +1,44 @@
-import {initializeApp, applicationDefault } from 'firebase-admin/app';
-import { getMessaging } from "firebase-admin/messaging";
-import express, { json } from "express";
-import cors from "cors";
-
-process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
+const express = require('express');
+const admin = require('firebase-admin');
+const bodyParser = require('body-parser');
 const app = express();
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+const serviceAccount = require('./service-account-file.json');
 
-app.use(
-  cors({
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-  })
-);
-
-app.use(function(req, res, next) {
-  res.setHeader("Content-Type", "application/json");
-  next();
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
 });
 
+app.use(bodyParser.json());
 
-initializeApp({
-  credential: applicationDefault(),
-  projectId: 'potion-for-creators',
-});
+// نقطة إرسال إشعار
+app.post('/send-notification', async (req, res) => {
+  const { token, title, body, data } = req.body;
 
-
-
-app.post("/send", function (req, res) {
-  const receivedToken = req.body.fcmToken;
-  
   const message = {
+    token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
     notification: {
       title: "Notif",
-      body: 'This is a Test Notification'
+      body: 'This is a Test Notification',
     },
-    token: "ezxpLE_RRXOYk_pbYkB2iE:APA91bFQX7cSLLhlTRpqnfJNRUHJYjzjIQj75BDrYVMhULP5WHRUklMgdtQiBbizbrV_ambnHiHO_gXTgZfMdKKfIbzqDvBJGqqwU5KFfs98w2fPlz6poDg",
+    data: data || {},
   };
-  
-  getMessaging()
-    .send(message)
-    .then((response) => {
-      res.status(200).json({
-        message: "Successfully sent message",
-        token: receivedToken,
-      });
-      console.log("Successfully sent message:", response);
-    })
-    .catch((error) => {
-      res.status(400);
-      res.send(error);
-      console.log("Error sending message:", error);
-    });
-  
 
+  try {
+    const response = await admin.messaging().send(message);
+    console.log('تم إرسال الإشعار:', response);
+    res.status(200).send({ success: true, messageId: response });
+  } catch (error) {
+    console.error('فشل الإرسال:', error);
+    res.status(500).send({ success: false, error: error.message });
+  }
 });
 
-app.listen(3000, function () {
-  console.log("Server started on port 3000");
+app.get('/', (req, res) => {
+  res.send('FCM Notification Server is running 🎉');
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
